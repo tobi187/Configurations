@@ -1,0 +1,8 @@
+# Terminal Setup Todos:
+# Set-ExecutionPolicy RemoteSigned
+# New-Item -Path $profile -Type File
+
+# oh my posh maybe ?
+
+Set-Alias npp "C:\Program Files\Notepad++\notepad++.exe"
+# Set-Alias subl 
