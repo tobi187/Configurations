@@ -7,9 +7,9 @@
 Set-Alias npp "C:\Program Files\Notepad++\notepad++.exe"
 # Set-Alias subl 
 Set-Alias va ".\.venv\Scripts\Activate.ps1"
-Set-Alias c="cls"
-Set-Alias ll="ls -al"
-Set-Alias l="ls"
+Set-Alias c "cls"
+Set-Alias ll "ls -al"
+Set-Alias l "ls"
 
 
 function add-ssh() {
