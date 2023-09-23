@@ -1,6 +1,6 @@
 # Terminal Setup Todos:
 # Set-ExecutionPolicy RemoteSigned
-# New-Item -Path $profile -Type File
+# New-Item -Path $profile -Type File -Force
 
 # oh my posh maybe ?
 
