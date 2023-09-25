@@ -19,5 +19,5 @@ function add-ssh() {
 
 function mcd($a) {
     mkdir $a
-    ch $a
+    cd $a
 }
