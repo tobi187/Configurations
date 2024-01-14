@@ -12,12 +12,12 @@ Set-Alias ll "ls -al"
 Set-Alias l "ls"
 
 
-function add-ssh() {
-    ssh-agent
-    ssh-add "C:\Users\fisch\.ssh\id_rsa"
-}
+# function add-ssh() {
+#     ssh-agent
+#     ssh-add "C:\Users\fisch\.ssh\id_rsa"
+# }
 
 function mcd($a) {
-    mkdir $a
-    cd $a
+    mkdir "$a"
+    cd "$a"
 }
