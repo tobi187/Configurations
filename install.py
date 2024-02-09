@@ -2,6 +2,7 @@ import platform
 import os
 import shutil
 import enum
+import subprocess
 
 pt = platform.platform()
 
@@ -9,9 +10,9 @@ linux = "Linux"
 windows = "Windows"
 
 class Action(enum.Enum):
-    Overwrite: 1
-    Append: 2
-    Skip: 3
+    Overwrite = 1
+    Append = 2
+    Skip = 3
 
 
 current_platform = windows if pt.startswith(windows) else linux
@@ -21,7 +22,7 @@ locations = {
         {
             "name": "powershell profile",
             "local_path": "ps_profile",
-            "remote_path": "%USERPROFILE%\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1",
+            "remote_path": r"%USERPROFILE%\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1",
             "type": "file",
             "action": Action.Overwrite 
         },
@@ -44,7 +45,7 @@ locations = {
         {
             "name": "bashrc",
             "local_path": "bashrc",
-            "remote_path": "$HOME\.bashrc",
+            "remote_path": "$HOME/.bashrc",
             "type": "file",
             "action": Action.Append
         },
@@ -65,8 +66,16 @@ locations = {
     ]
 }
 
+def _replace_home(str: str):
+    home = os.path.expanduser("~")
+    local_appdata = os.getenv('LOCALAPPDATA')
+    if current_platform == linux:
+        return str.replace("$HOME", home)
+    else:
+        return  str.replace("%USERPROFILE%", home).replace("%APPDATA%", local_appdata)
+
 def handle_file(file_obj):
-    rp = file_obj["remote_path"]
+    rp = _replace_home(file_obj["remote_path"])
     # implement skipping
     os.makedirs(os.path.dirname(rp), exist_ok=True)
     
@@ -80,7 +89,7 @@ def handle_file(file_obj):
             handler.write(f"\n\n{data}")
     
 def handle_folder(folder_obj):
-    rp = folder_obj["remote_path"]
+    rp = _replace_home(folder_obj["remote_path"])
     lp = folder_obj["local_path"]
     # implement skipping
     os.makedirs(rp, exist_ok=True)
@@ -114,3 +123,5 @@ if __name__ == "__main__":
 
     print("Finished successful")
     
+    if current_platform == linux:
+        subprocess.Popen(["source", "~/.bashrc"])
