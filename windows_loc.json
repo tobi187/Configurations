@@ -1,0 +1,30 @@
+[
+    {
+        "name": "powershell profile",
+        "local_path": "ps_profile",
+        "remote_path": "~/Documents/WindowsPowerShell/Microsoft.PowerShell_profile.ps1",
+        "f_type": "file",
+        "action": "Overwrite"
+    },
+    {
+        "name": "vs code",
+        "local_path": "code",
+        "remote_path": "%APPDATA%/Code/User",
+        "f_type": "directory",
+        "action": "Overwrite"
+    },
+    {
+        "name": "vim",
+        "local_path": "vimrc",
+        "remote_path": "~/.vimrc",
+        "f_type": "file",
+        "action": "Overwrite"
+    },
+    {
+        "name": "npp",
+        "local_path": "np",
+        "remote_path": "%APPDATA%/Notepad++",
+        "f_type": "folder",
+        "action": "Overwrite"
+    }
+]

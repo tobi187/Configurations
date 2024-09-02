@@ -1,0 +1,14 @@
+{
+    "cSpell.language": "en,de-DE",
+    "cSpell.caseSensitive": false,
+    "cSpell.languageSettings": [
+        {
+            "languageId": "*",
+            "caseSensitive": false
+        }
+    ],
+    "editor.formatOnSave": true,
+    "git.autofetch": true,
+    "git.pruneOnFetch": true,
+    "editor.fontLigatures": true
+}

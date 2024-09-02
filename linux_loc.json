@@ -1,0 +1,30 @@
+[
+    {
+        "name": "bashrc",
+        "local_path": "bashrc",
+        "remote_path": "~/.bashrc",
+        "f_type": "file",
+        "action": "Append"
+    },
+    {
+        "name": "vs code",
+        "local_path": "code",
+        "remote_path": "~/.config/Code/User",
+        "f_type": "directory",
+        "action": "Overwrite"
+    },
+    {
+        "name": "vim",
+        "local_path": "vimrc",
+        "remote_path": "~/.vimrc",
+        "f_type": "file",
+        "action": "Overwrite"
+    },
+    {
+        "name": "tmux",
+        "local_path": "tmux",
+        "remote_path": "~/.tmux.conf",
+        "f_type": "file",
+        "action": "Overwrite"
+    }
+]

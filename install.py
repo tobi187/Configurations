@@ -1,13 +1,16 @@
-import platform
 import os
+import os.path
+import platform
 import shutil
 import enum
+import json
 import subprocess
 
 pt = platform.platform()
 
-linux = "Linux"
-windows = "Windows"
+LINUX = "Linux"
+WINDOWS = "Windows"
+LOCAL_CONFIG_FOLDER = "dotfiles"
 
 class Action(enum.Enum):
     Overwrite = 1
@@ -15,113 +18,79 @@ class Action(enum.Enum):
     Skip = 3
 
 
-current_platform = windows if pt.startswith(windows) else linux
+current_platform = WINDOWS if pt.startswith(WINDOWS) else LINUX
 
-locations = {
-    windows: [
-        {
-            "name": "powershell profile",
-            "local_path": "ps_profile",
-            "remote_path": r"%USERPROFILE%\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1",
-            "type": "file",
-            "action": Action.Overwrite 
-        },
-        {
-            "name": "vs code",
-            "local_path": "code",
-            "remote_path": r"%APPDATA%\Code\User",
-            "type": "directory",
-            "action": Action.Overwrite 
-        },
-        {
-            "name": "vim",
-            "local_path": "vimrc",
-            "remote_path": r"%USERPROFILE%\.vimrc",
-            "type": "file",
-            "action": Action.Overwrite
-        }
-    ],
-    linux: [
-        {
-            "name": "bashrc",
-            "local_path": "bashrc",
-            "remote_path": "$HOME/.bashrc",
-            "type": "file",
-            "action": Action.Append
-        },
-        {
-            "name": "vs code",
-            "local_path": "code",
-            "remote_path": r"$HOME/.config/Code/User",
-            "type": "directory",
-            "action": Action.Overwrite
-        },
-        {
-            "name": "vim",
-            "local_path": "vimrc",
-            "remote_path": "$HOME/.vimrc",
-            "type": "file",
-            "action": Action.Overwrite
-        }
-    ]
-}
+class Config:
+    def __init__(self, name, local_path, remote_path, f_type, action) -> None:
+        self.name = name
+        self.local_path = os.path.join(LOCAL_CONFIG_FOLDER, local_path)
+        self.remote_path = remote_path
+        self.f_type = f_type
+        self.action = Action[action]
 
-def _replace_home(str: str):
-    home = os.path.expanduser("~")
-    local_appdata = os.getenv('LOCALAPPDATA')
-    if current_platform == linux:
-        return str.replace("$HOME", home)
-    else:
-        return  str.replace("%USERPROFILE%", home).replace("%APPDATA%", local_appdata)
-
-def handle_file(file_obj):
-    rp = _replace_home(file_obj["remote_path"])
-    # implement skipping
-    os.makedirs(os.path.dirname(rp), exist_ok=True)
-    
-    if file_obj["action"] == Action.Overwrite:
-        shutil.copyfile(file_obj["local_path"], rp)
-    elif file_obj["action"] == Action.Append:
-        with open(file_obj["local_path"], "r") as handler:
-            data = handler.read()
+    def handle_file(self):
+        # implement skipping
+        file_path = os.path.expanduser(os.path.expandvars(self.remote_path))
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
         
-        with open(rp, "a") as handler:
-            handler.write(f"\n\n{data}")
-    
-def handle_folder(folder_obj):
-    rp = _replace_home(folder_obj["remote_path"])
-    lp = folder_obj["local_path"]
-    # implement skipping
-    os.makedirs(rp, exist_ok=True)
-    
-    if folder_obj["action"] == Action.Overwrite:
-        for file in os.listdir(lp):
-            shutil.copyfile(os.path.join(lp, file), os.path.join(rp, file))
-
-    elif folder_obj["action"] == Action.Append:
-        for file in os.listdir(lp):
-            with open(os.path.join(lp, file), "r") as handler:
+        if self.action == Action.Overwrite:
+            shutil.copyfile(self.local_path, file_path)
+        elif self.action == Action.Append:
+            with open(self.local_path, "r") as handler:
                 data = handler.read()
             
-            with open(os.path.join(rp, file), "a") as handler:
+            with open(file_path, "a") as handler:
                 handler.write(f"\n\n{data}")
         
+    def handle_folder(self):
+        folder_path = os.path.expanduser(os.path.expandvars(self.remote_path))
+        lp = self.local_path
+
+        # implement skipping
+        os.makedirs(folder_path, exist_ok=True)
+        
+        if self.action == Action.Overwrite:
+            for file in os.listdir(lp):
+                shutil.copyfile(os.path.join(lp, file), os.path.join(folder_path, file))
+
+        elif self.action == Action.Append:
+            for file in os.listdir(lp):
+                with open(os.path.join(lp, file), "r") as handler:
+                    data = handler.read()
+                
+                with open(os.path.join(folder_path, file), "a") as handler:
+                    handler.write(f"\n\n{data}")
+    
+    def run(self):
+        if self.f_type == "directory":
+            self.handle_folder()
+        else:
+            self.handle_file()
 
 if __name__ == "__main__":
     print("Detecting operating System")
     print(current_platform)
     print()
 
-    for dt in locations[current_platform]:
-        print(f"Trying to write {dt['name']}")
-        if dt["type"] == "file":
-            handle_file(dt)
-        elif dt["type"] == "directory":
-            handle_folder(dt)
-        print(f"{dt['name']} written")
-        print()
+    file = current_platform.lower() + "_loc.json"
+    with open(file, "r") as handler:
+        json_data = json.load(handler)
+    configs = [Config(**cfg) for cfg in json_data]
+    [print(cfg.__dict__) for cfg in configs]
+    
+    exit(0)
+    # [cfg.run() for cfg in configs]
+
+    # for dt in locations[current_platform]:
+    #     print(f"Trying to write {dt['name']}")
+    #     if dt["type"] == "file":
+    #         handle_file(dt)
+    #     elif dt["type"] == "directory":
+    #         handle_folder(dt)
+    #     print(f"{dt['name']} written")
+    #     print()
 
     print("Finished successful")
     
-    if current_platform == linux:
+    if current_platform == LINUX:
         subprocess.Popen(["source", "~/.bashrc"])
