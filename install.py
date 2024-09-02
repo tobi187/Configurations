@@ -78,7 +78,6 @@ if __name__ == "__main__":
     with open(file, "r") as handler:
         json_data = json.load(handler)
     configs = [Config(**cfg) for cfg in json_data]
-    [print(cfg.__dict__) for cfg in configs]
     
     [cfg.run() for cfg in configs]
 
@@ -94,4 +93,4 @@ if __name__ == "__main__":
     print("Finished successful")
     
     if current_platform == LINUX:
-        subprocess.Popen(["source", "~/.bashrc"])
+        subprocess.run(["source", "~/.bashrc"])

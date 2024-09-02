@@ -24,7 +24,7 @@
         "name": "npp",
         "local_path": "np",
         "remote_path": "%APPDATA%/Notepad++",
-        "f_type": "folder",
+        "f_type": "directory",
         "action": "Overwrite"
     }
 ]
