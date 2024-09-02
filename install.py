@@ -66,6 +66,8 @@ class Config:
             self.handle_folder()
         else:
             self.handle_file()
+            
+        print(f"Finished writing {self.name}")
 
 if __name__ == "__main__":
     print("Detecting operating System")
@@ -78,8 +80,7 @@ if __name__ == "__main__":
     configs = [Config(**cfg) for cfg in json_data]
     [print(cfg.__dict__) for cfg in configs]
     
-    exit(0)
-    # [cfg.run() for cfg in configs]
+    [cfg.run() for cfg in configs]
 
     # for dt in locations[current_platform]:
     #     print(f"Trying to write {dt['name']}")
