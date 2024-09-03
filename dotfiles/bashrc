@@ -1,5 +1,3 @@
-alias l="ls"
-alias ll="ls -al"
 alias c="clear"
 alias ccat='pygmentize -g'
 alias py='python3'
