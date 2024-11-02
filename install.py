@@ -16,6 +16,7 @@ class Action(enum.Enum):
     Overwrite = 1
     Append = 2
     Skip = 3
+    BASHRC = 4
 
 
 current_platform = WINDOWS if pt.startswith(WINDOWS) else LINUX
@@ -41,7 +42,16 @@ class Config:
             
             with open(file_path, "a") as handler:
                 handler.write(f"\n\n{data}")
-        
+        elif self.action == Action.BASHRC:
+            shutil.copyfile(self.local_path, file_path)
+            str = "[ -f $HOME/.custom-bashrc ] && . $HOME/.custom-bashrc"
+            bash_rc_path = os.path.expanduser("~/.bashrc")
+            with open(bash_rc_path, "r") as file:
+                data = file.read().split("\n")
+            if not any([x.strip() == str for x in data]):
+                with open(file_path, "a") as handler:
+                    handler.write(f"\n\n{str}")
+
     def handle_folder(self):
         folder_path = os.path.expanduser(os.path.expandvars(self.remote_path))
         lp = self.local_path
@@ -92,5 +102,3 @@ if __name__ == "__main__":
 
     print("Finished successful")
     
-    if current_platform == LINUX:
-        subprocess.run(["source", "~/.bashrc"])

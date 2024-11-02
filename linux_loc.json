@@ -1,10 +1,10 @@
 [
     {
         "name": "bashrc",
-        "local_path": "bashrc",
-        "remote_path": "~/.bashrc",
+        "local_path": "custom-bashrc",
+        "remote_path": "~/.custom-bashrc",
         "f_type": "file",
-        "action": "Append"
+        "action": "BASHRC"
     },
     {
         "name": "vs code",
