@@ -4,7 +4,6 @@ import platform
 import shutil
 import enum
 import json
-import subprocess
 
 pt = platform.platform()
 
@@ -36,12 +35,14 @@ class Config:
         
         if self.action == Action.Overwrite:
             shutil.copyfile(self.local_path, file_path)
+        
         elif self.action == Action.Append:
             with open(self.local_path, "r") as handler:
                 data = handler.read()
             
             with open(file_path, "a") as handler:
                 handler.write(f"\n\n{data}")
+
         elif self.action == Action.BASHRC:
             shutil.copyfile(self.local_path, file_path)
             str = "[ -f $HOME/.custom-bashrc ] && . $HOME/.custom-bashrc"
@@ -49,7 +50,7 @@ class Config:
             with open(bash_rc_path, "r") as file:
                 data = file.read().split("\n")
             if not any([x.strip() == str for x in data]):
-                with open(file_path, "a") as handler:
+                with open(bash_rc_path, "a") as handler:
                     handler.write(f"\n\n{str}")
 
     def handle_folder(self):
